@@ -1,0 +1,4 @@
+edit sudoers:
+
+Cmnd_Alias DDNSUPDATE = /var/www/ddns/update-tinydns.sh
+www-data  ALL=DDNSUPDATE, NOPASSWD: DDNSUPDATE

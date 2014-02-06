@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo Content-type: text/plain
+echo ""
+
+
+SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RDIR=$(dirname $SDIR)
+HASH=$(echo $REQUEST_URI | sed "s#/$(basename $0)/##g")
+CFILE="$RDIR/data/$HASH"
+
+
+# if hash does not exists
+if [ ! -f "$CFILE" ]; then
+	echo 500
+	exit 0
+fi
+
+
+#load current settings
+. $CFILE
+
+# if ip has not changed, exit
+if [ "$IP" == "$REMOTE_ADDR" ]; then
+	echo 300
+	exit 0
+fi
+
+#here we are clear to change ip
+NEWC="DOMAIN='$DOMAIN'\nIP='$REMOTE_ADDR'\nTTL='$TTL'"
+echo -e $NEWC > $CFILE
+echo 200
+
+sudo $RDIR/update-tinydns.sh > /dev/null 2>&1
+
