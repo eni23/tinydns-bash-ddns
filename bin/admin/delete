@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RDIR=$(dirname $(dirname  $SDIR))
+
+
+HASH=$(basename $(echo $REQUEST_URI | cut -d"/" -f4))
+if [ -f "$RDIR/data/$HASH" ]; then
+	. /$RDIR/data/$HASH
+	MESSAGE="<div id='msg' class='alert alert-success alert-dismissable'>Domain <b>$DOMAIN</b> deleted!</div>"
+	#delete domain
+	rm $RDIR/data/$HASH
+else
+	MESSAGE="<div id='msg' class='alert alert-danger'>Error: Hash cannot be resolved to domain</div>"
+fi
+
+. $SDIR/index.sh

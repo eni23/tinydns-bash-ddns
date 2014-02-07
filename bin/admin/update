@@ -1,0 +1,27 @@
+#!/bin/bash
+
+SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RDIR=$(dirname $(dirname  $SDIR))
+
+
+HASH=$(basename $(echo $REQUEST_URI | cut -d"/" -f4))
+DOMAIN=$(basename $(echo $REQUEST_URI | cut -d"/" -f5))
+IP=$(basename $(echo $REQUEST_URI | cut -d"/" -f6))
+TTL=$(basename $(echo $REQUEST_URI | cut -d"/" -f7))
+
+
+if [ -f "$RDIR/data/$HASH" ]; then
+	MESSAGE="<div id='msg' class='alert alert-success alert-dismissable'>Domain <b>$DOMAIN</b> modified! and changes synced to alll DNS-Servers</div>"
+	# modify domain and sync
+	NEWC="DOMAIN='$DOMAIN'\nIP='$IP'\nTTL='$TTL'"
+	CFILE="$RDIR/data/$HASH"
+	echo -e $NEWC > $CFILE
+	sudo $RDIR/update-tinydns.sh > /dev/null
+else
+	MESSAGE="<div id='msg' class='alert alert-danger'>Error: Hash cannot be resolved to domain</div>"
+fi
+
+
+
+
+. $SDIR/index.sh

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RDIR=$(dirname $(dirname  $SDIR))
+
+
+DOMAIN=$(basename $(echo $REQUEST_URI | cut -d"/" -f4))
+IP=$(basename $(echo $REQUEST_URI | cut -d"/" -f5))
+TTL=$(basename $(echo $REQUEST_URI | cut -d"/" -f6))
+
+
+if [ -n "$DOMAIN" ] && [ -n "$IP" ] && [ -n "$IP" ]; then
+	MESSAGE="<div id='msg' class='alert alert-success alert-dismissable'>Domain <b>$DOMAIN</b> created and synced to alll DNS-Servers</div>"
+	HASH=$(dd if=/dev/urandom bs=1K count=2 2>/dev/null| md5sum | cut -d" " -f1)
+	NEWC="DOMAIN='$DOMAIN'\nIP='$IP'\nTTL='$TTL'"
+	echo -e $NEWC > $RDIR/data/$HASH
+	chown www-data:www-data $SDIR/data/$HASH
+	sudo $RDIR/update-tinydns.sh > /dev/null
+else
+	MESSAGE="<div id='msg' class='alert alert-danger'>Error creating DDNS-Domain</div>"
+fi
+
+
+
+
+. $SDIR/index.sh
