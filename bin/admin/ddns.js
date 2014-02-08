@@ -47,9 +47,26 @@ $(document).ready(function(){
 		$("#mask").modal("show");
         });
 
-
+	$('button.btn-myip').click(function(){
+		var hash=$(this).attr("hash"),
+		    uurl="/admin/update/"+hash,
+		    ipa=$(this).parent().parent().children("td").eq(2),
+		    dom=$(this).parent().parent().children("td").eq(0).html();		
+		ipa.load("/update/"+hash+"/1",function(data,stat,xhr){
+			$("h2").before("<div id='msg' class='alert alert-success'>Domain "+dom+" updated with IP: "+data+"</div>");
+	                ipa.html(data);
+			autohide_msg();
+		});
+	});
 
 });
 
-setTimeout(function() { $("div#msg").hide('fast'); }, 3000);
-
+autohide_msg=function(){
+	setTimeout(
+		function() {
+		 $("div#msg").hide('fast',function(){ 
+			$('div#msg').remove(); 
+		 });
+		}, 3000);
+}
+autohide_msg();

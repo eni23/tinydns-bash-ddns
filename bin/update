@@ -1,19 +1,20 @@
 #!/bin/bash
 
+SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+RDIR=$(dirname $SDIR)
+HASH=$(basename $(echo $REQUEST_URI | cut -d"/" -f3))
+CFILE="$RDIR/data/$HASH"
+RD=$(basename $(echo $REQUEST_URI | cut -d"/" -f4))
+
 echo Content-type: text/plain
 echo ""
 
-
-SDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RDIR=$(dirname $SDIR)
-HASH=$(echo $REQUEST_URI | sed "s#/$(basename $0)/##g")
-CFILE="$RDIR/data/$HASH"
-
-
 # if hash does not exists
 if [ ! -f "$CFILE" ]; then
-	echo 500
-	exit 0
+	if [ -z $RD ]; then
+		echo 500
+		exit 0
+	fi
 fi
 
 
@@ -22,14 +23,22 @@ fi
 
 # if ip has not changed, exit
 if [ "$IP" == "$REMOTE_ADDR" ]; then
-	echo 300
-	exit 0
+	if [ -z $RD ]; then
+		echo 300
+		exit 0
+	fi
 fi
 
 #here we are clear to change ip
 NEWC="DOMAIN='$DOMAIN'\nIP='$REMOTE_ADDR'\nTTL='$TTL'"
 echo -e $NEWC > $CFILE
-echo 200
+sudo $RDIR/update-tinydns.sh > /dev/null 2>&1
+
+if [ -z $RD ]; then
+	echo 200
+else
+	echo "$REMOTE_ADDR"
+fi
 
 sudo $RDIR/update-tinydns.sh > /dev/null 2>&1
 

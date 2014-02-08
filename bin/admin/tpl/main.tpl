@@ -14,7 +14,7 @@
    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">ddns admin</a>
+          <a class="navbar-brand" href="#">dyndns admin</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -28,6 +28,7 @@
    <div class="container">
       <br /><br /><br /><br /> 
       {message}
+      <div id="msg"></div>
       <h2>Domains</h2>
 
       <div class="table-responsive">
